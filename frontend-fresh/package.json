@@ -40,7 +40,7 @@
   },
   "proxy": {
     "/api": {
-      "target": "http://localhost:8000",
+      "target": "https://codetracker1.onrender.com",
       "changeOrigin": true
     }
   }
