@@ -14,18 +14,40 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5175",
-      "http://localhost:5177",
-      "http://localhost:5174",
-      "https://main-bkub-rj3hj4m6a-ubiquity89s-projects.vercel.app"
-    ],
-    credentials: true,
-  })
-);
+// CORS configuration
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5175",
+  "http://localhost:5177", 
+  "http://localhost:5174",
+  "https://main-bkub-rj3hj4m6a-ubiquity89s-projects.vercel.app",
+  "https://main-xj5n.onrender.com"
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      console.warn(`CORS error: ${origin} not allowed`);
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
+  maxAge: 86400 // 24 hours
+};
+
+// Enable CORS for all routes
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Error handling middleware

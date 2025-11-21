@@ -16,7 +16,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { api } from '../../config/api';
+import api from '../../config/api';
 import { Pie } from 'react-chartjs-2';
 import { Brightness4, Brightness7 } from '@mui/icons-material';
 import Footer from '../Footer/Footer';
@@ -98,6 +98,14 @@ function Dashboard() {
       }
 
       try {
+        setPlatforms(prev => 
+          prev.map(p => 
+            p.name === platform.name 
+              ? { ...p, loading: true, error: undefined } 
+              : p
+          )
+        );
+
         let response;
         switch (platform.name) {
           case 'leetcode':
@@ -119,10 +127,7 @@ function Dashboard() {
             throw new Error(`Unsupported platform: ${platform.name}`);
         }
 
-        if (response && response.data) {
-          setPlatforms(prev => 
-            prev.map(p => 
-              p.name === platform.name 
+        // Update the platform with the response data
                 ? { ...p, stats: response.data, loading: false } 
                 : p
             )
