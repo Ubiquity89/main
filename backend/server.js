@@ -15,33 +15,41 @@ const app = express();
 
 // Middleware
 // CORS configuration
+// CORS configuration
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5175",
-  "http://localhost:5177", 
+  "http://localhost:5177",
   "http://localhost:5174",
-   "https://main-bkub.vercel.app",
-  "https://main-bkub-rj3hj4m6a-ubiquity89s-projects.vercel.app",
-  "https://main-xj5n.onrender.com"
+  "https://main-bkub.vercel.app",     // stable production
+  "https://main-xj5n.onrender.com"    // backend
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      console.warn(`CORS error: ${origin} not allowed`);
-      return callback(new Error(msg), false);
+
+    // Allow ALL Vercel preview deployments:
+    // https://anything-ubiquity89s-projects.vercel.app
+    if (/https:\/\/.*-ubiquity89s-projects\.vercel\.app$/.test(origin)) {
+      console.log("Allowed Vercel Preview:", origin);
+      return callback(null, true);
     }
-    return callback(null, true);
+
+    // Allow fixed origins
+    if (allowedOrigins.includes(origin)) {
+      console.log("Allowed Origin:", origin);
+      return callback(null, true);
+    }
+
+    console.warn("❌ BLOCKED ORIGIN:", origin);
+    return callback(new Error("CORS blocked: Origin not allowed"), false);
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
-  maxAge: 86400 // 24 hours
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],
+  maxAge: 86400
 };
 
 // Enable CORS for all routes
