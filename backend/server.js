@@ -20,6 +20,7 @@ const allowedOrigins = [
   "http://localhost:5175",
   "http://localhost:5177", 
   "http://localhost:5174",
+   "https://main-bkub.vercel.app",
   "https://main-bkub-rj3hj4m6a-ubiquity89s-projects.vercel.app",
   "https://main-xj5n.onrender.com"
 ];
