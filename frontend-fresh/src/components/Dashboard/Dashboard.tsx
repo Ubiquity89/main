@@ -15,8 +15,8 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import apiEndpoints from '../../config/api';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import api from '../../config/api';
 import { Pie } from 'react-chartjs-2';
 import { Brightness4, Brightness7 } from '@mui/icons-material';
 import Footer from '../Footer/Footer';
@@ -98,36 +98,31 @@ function Dashboard() {
       }
 
       try {
-        setPlatforms(prev => 
-          prev.map(p => 
-            p.name === platform.name 
-              ? { ...p, loading: true, error: undefined } 
-              : p
-          )
-        );
-
         let response;
         switch (platform.name) {
           case 'leetcode':
-            response = await api.leetcode.getStats(platform.username);
+            response = await apiEndpoints.leetcode.getStats(platform.username);
             break;
           case 'gfg':
-            response = await api.gfg.getStats(platform.username);
+            response = await apiEndpoints.gfg.getStats(platform.username);
             break;
           case 'hackerrank':
-            response = await api.hackerrank.getStats(platform.username);
+            response = await apiEndpoints.hackerrank.getStats(platform.username);
             break;
           case 'codechef':
-            response = await api.codechef.getStats(platform.username);
+            response = await apiEndpoints.codechef.getStats(platform.username);
             break;
           case 'codeforces':
-            response = await api.codeforces.getStats(platform.username);
+            response = await apiEndpoints.codeforces.getStats(platform.username);
             break;
           default:
             throw new Error(`Unsupported platform: ${platform.name}`);
         }
 
-        // Update the platform with the response data
+        if (response && response.data) {
+          setPlatforms(prev => 
+            prev.map(p => 
+              p.name === platform.name 
                 ? { ...p, stats: response.data, loading: false } 
                 : p
             )
