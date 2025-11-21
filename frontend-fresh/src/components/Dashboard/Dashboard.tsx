@@ -15,8 +15,8 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import axios from 'axios';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { api } from '../../config/api';
 import { Pie } from 'react-chartjs-2';
 import { Brightness4, Brightness7 } from '@mui/icons-material';
 import Footer from '../Footer/Footer';
@@ -99,16 +99,24 @@ function Dashboard() {
 
       try {
         let response;
-        if (platform.name === "leetcode") {
-          response = await axios.post('http://localhost:5000/api/leetcode/stats', { username: platform.username });
-        } else if (platform.name === "gfg") {
-          response = await axios.post('http://localhost:5000/api/gfg/stats', { username: platform.username });
-        } else if (platform.name === "hackerrank") {
-          response = await axios.post('http://localhost:5000/api/hackerrank/stats', { username: platform.username });
-        } else if (platform.name === "codechef") {
-          response = await axios.post('http://localhost:5000/api/codechef/stats', { username: platform.username });
-        } else if (platform.name === "codeforces") {
-          response = await axios.post('http://localhost:5000/api/codeforces/stats', { username: platform.username });
+        switch (platform.name) {
+          case 'leetcode':
+            response = await api.leetcode.getStats(platform.username);
+            break;
+          case 'gfg':
+            response = await api.gfg.getStats(platform.username);
+            break;
+          case 'hackerrank':
+            response = await api.hackerrank.getStats(platform.username);
+            break;
+          case 'codechef':
+            response = await api.codechef.getStats(platform.username);
+            break;
+          case 'codeforces':
+            response = await api.codeforces.getStats(platform.username);
+            break;
+          default:
+            throw new Error(`Unsupported platform: ${platform.name}`);
         }
 
         if (response && response.data) {
